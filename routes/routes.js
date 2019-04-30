@@ -2,8 +2,8 @@
 
 const express = require('express');
 const router = express.Router();
-const DataSet = require('../models/dataSet.js');
-const Point = require('../models/point.js');
+const DataSet = require('../models/dataSet');
+const Point = require('../models/point');
 const Route = require('../models/route');
 const Bearing = require('../models/bearing');
 
@@ -15,8 +15,7 @@ router.post('/', (req, res, next) => {
   const {
     name,
     description,
-    bearingDirection,
-    dataSetId
+    bearingDirection
   } = req.body;
   let route;
 

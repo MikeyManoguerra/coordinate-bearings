@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const DataSet = require('../models/dataSet.js');
-const Point = require('../models/point.js');
+const DataSet = require('../models/dataSet');
+const Point = require('../models/point');
 // get the names of all the datasets
 
 router.get('/', (req, res, next) => {
