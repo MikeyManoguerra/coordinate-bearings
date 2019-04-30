@@ -1,4 +1,4 @@
-const Route = require('../models/route');
+
 const Bearing = require('../models/bearing');
 
 /**
@@ -18,29 +18,43 @@ const Bearing = require('../models/bearing');
 
 // const magnitude = Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2))
 
-// const newRoute ={
-//   name, 
-//   description,
-//   bearingDirection,
-//   dataSetId
-// }
 
-function createRoute(newRoute){
+function buildRoute(route, currentPoint, pointArray, parentId = null) {
+  const routeId = route.id;
+  const bearingDirection = route.bearingDirection;
+  const updatedPointArray = filterPointArray(currentPoint, pointArray, bearingDirection)
+  if (updatedPointArray.length === 0) {
+    return;
+  }
+  const [nextPoint, shortestMagnitude] = findTheNextPoint(currentPoint, updatedPointArray);
+  const newBearing = {
+    xCoordinate: nextPoint.xCoordinate,
+    yCoordinate: nextPoint.yCoordinate,
+    magnitudeToParent: shortestMagnitude,
+    dataSetId: currentPoint.dataSetId,
+    routeId,
+    parentId,
+  };
 
+  return Bearing.create(newBearing)
+    .then((bearing) => {
+      const childId = bearing.id;
+      if (parentId) {
+        Bearing.findOneAndUpdate({ _id: parentId }, { $set: { childId: childId } }, { returnNewDocument: true });
+      }
+      return buildRoute(route, nextPoint, updatedPointArray, childId);
+    })
+    .catch(() => {
+
+    })
 }
 
-function buildRoute(currentPoint, pointsArray, routeId) {
-  const [nextPoint, shortestMagnitude] = findTheNextPoint(currentPoint, pointsArray);
 
 
-}
-
-
-
-function findTheNextPoint(currentPoint, pointsArray) {
-  let shortestMagnitude = calculateMagnitude(currentPoint, pointsArray[0]);
-  let nextPoint = pointsArray[0];
-  pointsArray.forEach(point => {
+function findTheNextPoint(currentPoint, pointArray) {
+  let shortestMagnitude = calculateMagnitude(currentPoint, pointArray[0]);
+  let nextPoint = pointArray[0];
+  pointArray.forEach(point => {
     const magnitude = calculateMagnitude(currentPoint, point);
     if (magnitude < shortestMagnitude) {
       shortestMagnitude = magnitude;
@@ -50,21 +64,16 @@ function findTheNextPoint(currentPoint, pointsArray) {
   return [nextPoint, shortestMagnitude];
 }
 
-function addBearingToRoute(routeId, nextBearing, shortestMagnitude) {
-  // adds the bearing object to the route. unsure if add to DB as we go or build an array and then insert many.
-  //  the problem is the parent child relationships,
-  // so cant actually use insertmany method
-}
-
-function filterPointsArray(currentPoint, pointsArray, bearingDirection) {
+function filterPointArray(currentPoint, pointArray, bearingDirection) {
   // removes newest bearing from the points array, runs the filter function based upon the 
   // users bearing parameters
-  const index = pointsArray.findIndex(point => point.id === currentPoint.id);
-  const arrayWithCurrentRemoved = [...pointsArray.slice(0, index), ...pointsArray.slice((index + 1))];
+  const index = pointArray.findIndex(point => point.id === currentPoint.id);
+  const arrayWithCurrentRemoved = [...pointArray.slice(0, index), ...pointArray.slice((index + 1))];
   const arrayFilteredForBearing = filterPointsByBearingDirection(currentPoint, arrayWithCurrentRemoved, bearingDirection);
   return arrayFilteredForBearing;
 }
 
+//  called inside find the next point
 function calculateMagnitude(currentPoint, otherPoint) {
   const currentX = currentPoint.xCoordinate;
   const currentY = currentPoint.yCoordinate;
@@ -74,6 +83,7 @@ function calculateMagnitude(currentPoint, otherPoint) {
   return magnitude;
 }
 
+// called in filterPointArray, removes current point and any  points that do not match bearing direction in array
 function filterPointsByBearingDirection(currentPoint, arrayWithCurrentRemoved, bearingDirection) {
   // does not handle crossing the max longitude line in pacific
   switch (bearingDirection) {
@@ -151,4 +161,6 @@ const pointArrayTest = [
 
 ]
 
-filterPointsArray(pointB, pointArrayTest)
+filterPointArray(pointB, pointArrayTest);
+
+module.exports = { buildRoute };
