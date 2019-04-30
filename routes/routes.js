@@ -37,7 +37,7 @@ router.post('/', (req, res, next) => {
     .then(pointArray => {
 
       let indexArray = [];
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < 500; i++) {
         let index = Math.floor(Math.random() * pointArray.length);
         indexArray.push(index);
       }
