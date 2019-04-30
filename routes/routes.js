@@ -2,8 +2,8 @@
 
 const express = require('express');
 const router = express.Router();
-const DataSet = require('../models/dataSet');
 const Point = require('../models/point');
+const DataSet = require('../models/dataSet');
 const Route = require('../models/route');
 const Bearing = require('../models/bearing');
 
