@@ -29,10 +29,13 @@ function buildRoute(route, currentPoint, pointArray, parentId = null) {
       const childId = bearing.id;
       // if parentId (any other point but starting point, update parent object with child)
       if (parentId) {
-        Bearing.findOneAndUpdate({ _id: parentId }, { $set: { childId: childId } }, { returnNewDocument: true });
-      }
-      // add another point to route
-      return buildRoute(route, nextPoint, updatedPointArray, childId);
+        console.log('hiiii')
+        return Bearing.findOneAndUpdate({ _id: parentId }, { $set: { childId: childId } }, { returnNewDocument: true })
+          .then(() => {
+            return buildRoute(route, nextPoint, updatedPointArray, childId);
+          });
+        // add another point to route
+      } else return buildRoute(route, nextPoint, updatedPointArray, childId);
     })
     .catch(() => {
 

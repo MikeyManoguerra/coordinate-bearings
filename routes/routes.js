@@ -5,10 +5,13 @@ const router = express.Router();
 const DataSet = require('../models/dataSet.js');
 const Point = require('../models/point.js');
 const Route = require('../models/route');
+const Bearing = require('../models/bearing');
+
 const { buildRoute } = require('../utils/vectorDistances');
 
 
 router.post('/', (req, res, next) => {
+  console.log('hi', req.body);
   const {
     name,
     description,
@@ -33,11 +36,43 @@ router.post('/', (req, res, next) => {
       return buildRoute(route, initialPoint, pointArray);
     })
     .then(() => {
-      res.status(204).end();
+      return Bearing.find({ routeId: route.id });
+
+    })
+    .then((bearings) => { 
+      const bearingsInOrder = orderBearings(bearings);
+      return res.json(bearingsInOrder);
     })
     .catch(() => {
 
     });
 });
+
+function orderBearings(bearingsArray) {
+  const parent = bearingsArray.find(point => {
+    return point.parentId === null;
+  });
+  let bearingsInOrder = [];
+  let currentPoint = parent;
+
+  while (currentPoint.childId) {
+    const newPoint = {
+      lng: currentPoint.xCoordinate,
+      lat: currentPoint.yCoordinate
+    };
+    bearingsInOrder.push(newPoint);
+    const newCurrentPoint = bearingsArray.find(point => {
+      return point.id.toString() === currentPoint.childId.toString();
+    });
+    currentPoint = newCurrentPoint;
+  }
+  const lastNewPoint = {
+    lng: currentPoint.xCoordinate,
+    lat: currentPoint.yCoordinate
+  };
+  bearingsInOrder.push(lastNewPoint)
+
+  return bearingsInOrder;
+}
 
 module.exports = router;

@@ -6,7 +6,7 @@ const DATABASE_URL = 'mongodb://localhost/mongodb-coordinates';
 const DataSet = require('../models/dataSet');
 const Point = require('../models/point');
 
-const inlets = require('../inlets.json');
+const inlets = require('../testInlets.json');
 const { inletDataSet } = require('../db/inletDataSet');
 
 console.log('Connecting to mongodb at ', DATABASE_URL);
