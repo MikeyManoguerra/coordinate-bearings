@@ -3,9 +3,9 @@
 const express = require('express');
 const router = express.Router();
 const { Point } = require('../models/point');
-const { DataSet } = require('../models/dataSet');
 const { Route } = require('../models/route');
 const { Bearing } = require('../models/bearing');
+const { DataSet } = require('../models/dataSetModel');
 
 const { buildRoute } = require('../utils/vectorDistances');
 
