@@ -7,11 +7,13 @@ const Point = require('../models/point.js');
 router.get('/', (req, res, next) => {
   return DataSet.find()
     .then((dataSets) => {
-      console.log(dataSets);
       return res.json(dataSets);
     })
     .catch(err => next(err));
 });
+
+// TODO: addd a get all coordinates in dataset route?
+
 
 router.post('/', (req, res, next) => {
   const {
