@@ -7,7 +7,7 @@ function buildRoute(route, currentPoint, pointArray, parentId = null) {
   const bearingDirection = route.bearingDirection;
   // filter point array by parameters and remove current point from remaining points
   const updatedPointArray = filterPointArray(currentPoint, pointArray, bearingDirection);
-  console.log(updatedPointArray.length);
+
   // if there are no points left, exit recursion
   if (updatedPointArray.length === 0) {
     return;
@@ -29,7 +29,6 @@ function buildRoute(route, currentPoint, pointArray, parentId = null) {
       const childId = bearing.id;
       // if parentId (any other point but starting point, update parent object with child)
       if (parentId) {
-        console.log('hiiii')
         return Bearing.findOneAndUpdate({ _id: parentId }, { $set: { childId: childId } }, { returnNewDocument: true })
           .then(() => {
             return buildRoute(route, nextPoint, updatedPointArray, childId);
@@ -99,7 +98,6 @@ function filterPointsByBearingDirection(currentPoint, arrayWithCurrentRemoved, b
       return filteredArray;
     }
     case 'WEST': {
-      console.log('hi');
       const filteredArray = arrayWithCurrentRemoved.filter(point =>
         point.xCoordinate < currentPoint.xCoordinate
       )

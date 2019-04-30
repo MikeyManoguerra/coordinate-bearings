@@ -11,35 +11,50 @@ const { buildRoute } = require('../utils/vectorDistances');
 
 
 router.post('/', (req, res, next) => {
-  console.log('hi', req.body);
+
   const {
     name,
     description,
     bearingDirection,
     dataSetId
   } = req.body;
-  const newRoute = {
-    name,
-    description,
-    bearingDirection,
-    dataSetId
-  };
   let route;
-  return Route.create(newRoute)
+
+  return DataSet.findOne()
+    .then((dataSet) => {
+      const dataSetId = dataSet.id;
+      const newRoute = {
+        name,
+        description,
+        bearingDirection,
+        dataSetId
+      };
+      return Route.create(newRoute);
+    })
     .then(_route => {
       route = _route;
-      return Point.find({ dataSetId });
+      return Point.find({ dataSetId: route.dataSetId });
     })
     .then(pointArray => {
+     
+      let indexArray = [];
+      for (let i = 0; i < 1000; i++) {
+        let index = Math.floor(Math.random() * pointArray.length);
+        indexArray.push(index);
+      }
+      let filteredPointArray = [];
+      indexArray.forEach(index => {
+        filteredPointArray.push(pointArray[index]);
+      });
       // TODO: have a better way of defining the initialPoint, but for now, random
-      const initialPoint = pointArray[Math.round(pointArray.length / 2)];
-      return buildRoute(route, initialPoint, pointArray);
+      const initialPoint = filteredPointArray[Math.floor(filteredPointArray.length / 2)];
+      return buildRoute(route, initialPoint, filteredPointArray);
     })
     .then(() => {
       return Bearing.find({ routeId: route.id });
 
     })
-    .then((bearings) => { 
+    .then((bearings) => {
       const bearingsInOrder = orderBearings(bearings);
       return res.json(bearingsInOrder);
     })

@@ -33,7 +33,6 @@ router.post('/', (req, res, next) => {
     })
     .catch((err) => {
 
-      console.log('hi', err);
       return next(err);
     });
 });
@@ -51,7 +50,6 @@ function insertPointIntoDataBase(dataSetId, coordinatesArray) {
       .catch((err) => { throw err })
   })
     .catch((res) => {
-      console.log('hey', res)
       const error = new Error(' one of the plot points you entered is missing a value')
       error.status = 400;
       return error;
