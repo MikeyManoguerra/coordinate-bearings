@@ -96,6 +96,7 @@ function filterPointsByBearingDirection(currentPoint, arrayWithCurrentRemoved, b
       return filteredArray;
     }
     case 'WEST': {
+      console.log('hi');
       const filteredArray = arrayWithCurrentRemoved.filter(point =>
         point.xCoordinate < currentPoint.xCoordinate
       )

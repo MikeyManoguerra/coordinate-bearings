@@ -40,7 +40,7 @@ mongoose.connect(DATABASE_URL, { useNewUrlParser: true, useCreateIndex: true })
     return Point.insertMany(arrayWithDataSetId);
   })
   .then((results) => {
-    console.log(`Inserted results with no errors, ${results}`);
+    // console.log(`Inserted results with no errors, ${results}`);
     console.info('Disconnecting...');
     return mongoose.disconnect();
   })

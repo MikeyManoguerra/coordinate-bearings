@@ -7,6 +7,8 @@ const dataSetsRouter = require('./routes/datasets');
 const routesRouter = require('./routes/routes');
 const { dbConnect } = require('./mongoose.js');
 
+app.use(express.static('public'));
+
 app.use(express.json());
 
 

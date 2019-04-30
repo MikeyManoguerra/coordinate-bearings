@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Coordinate Bearings</title>
+  <style>
+    #map {
+      height: 70%;
+      width: 80%;
+      margin: 20px auto 0;
+      border: 3px solid black;
+    }
+
+    /* Optional: Makes the sample page fill the window. */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <script>
+    function initMap() {
+      var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 11,
+        center: { lat: 39.96, lng: -75.15 },
+        mapTypeId: 'terrain'
+      });
+
+      var flightPlanCoordinates = [
+        { lng: -75.17468593660999, lat: 40.07466467174 },
+        { lng: -75.17252640056, lat: 40.074604749740004 },
+        { lng: -75.17450520937, lat: 40.07365676834 },
+        { lng: -75.17369114121, lat: 40.0731819227 },
+        { lng: -75.17630300284, lat: 40.07318601754 },
+        { lng: -75.17965865011, lat: 40.078749307129996 },
+      ];
+      var flightPath = new google.maps.Polyline({
+        path: flightPlanCoordinates,
+        geodesic: true,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+      });
+
+      flightPath.setMap(map);
+    }
+  </script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGIuO84QwpM3SWVbsubHOR-9YR0SnKQU&callback=initMap"
+    type="text/javascript"></script>
+</body>
+
+</html>
