@@ -1,32 +1,20 @@
 
 const Bearing = require('../models/bearing');
 
-/**
- * recursive?
- * have my starting point
- * Get an array of all the coordinate points objects
- * filter by parameters. remove any point >< than direction heading
- * use vector formula to get distance of each plot point to starting point
- * shortest one becomes new bearing instance
- *remove that point from large array
- new bearing instance becomes starting point
- return plot point with shortes parameter distance
- */
-
-
-//magnitude = sqrt((x2-x1)^2 +(y2-y1)^2)
-
-// const magnitude = Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2))
-
-
 function buildRoute(route, currentPoint, pointArray, parentId = null) {
+  // get important variables from route object
   const routeId = route.id;
   const bearingDirection = route.bearingDirection;
-  const updatedPointArray = filterPointArray(currentPoint, pointArray, bearingDirection)
+  // filter point array by parameters and remove current point from remaining points
+  const updatedPointArray = filterPointArray(currentPoint, pointArray, bearingDirection);
+
+  // if there are no points left, exit recursion
   if (updatedPointArray.length === 0) {
     return;
   }
+  // get the next point with magnitude formula
   const [nextPoint, shortestMagnitude] = findTheNextPoint(currentPoint, updatedPointArray);
+  // define new bearing for database
   const newBearing = {
     xCoordinate: nextPoint.xCoordinate,
     yCoordinate: nextPoint.yCoordinate,
@@ -35,21 +23,21 @@ function buildRoute(route, currentPoint, pointArray, parentId = null) {
     routeId,
     parentId,
   };
-
+  // insert new bearing object
   return Bearing.create(newBearing)
     .then((bearing) => {
       const childId = bearing.id;
+      // if parentId (any other point but starting point, update parent object with child)
       if (parentId) {
         Bearing.findOneAndUpdate({ _id: parentId }, { $set: { childId: childId } }, { returnNewDocument: true });
       }
+      // add another point to route
       return buildRoute(route, nextPoint, updatedPointArray, childId);
     })
     .catch(() => {
 
-    })
+    });
 }
-
-
 
 function findTheNextPoint(currentPoint, pointArray) {
   let shortestMagnitude = calculateMagnitude(currentPoint, pointArray[0]);
@@ -111,56 +99,5 @@ function filterPointsByBearingDirection(currentPoint, arrayWithCurrentRemoved, b
       return arrayWithCurrentRemoved;
   }
 }
-
-
-
-
-const pointA = {
-  id: 'gjreikg49363tgersw',
-  xCoordinate: 2.64262367755,
-  yCoordinate: 2.45235323,
-}
-
-const pointB = {
-  id: '22',
-  xCoordinate: -10.75474588,
-  yCoordinate: 2.9769497649,
-}
-
-const pointArrayTest = [
-  {
-    id: 'g4r3qy45breabqy45q',
-    xCoordinate: 2.64262367755,
-    yCoordinate: 2.45235323,
-  },
-  {
-    id: 'g4r3qy45qbfdabreby45q',
-    xCoordinate: 2.64262367755,
-    yCoordinate: 2.45235323,
-  },
-  {
-    id: 'g4r3qy466436435qy45q',
-    xCoordinate: 2.64262367755,
-    yCoordinate: 2.45235323,
-  },
-  {
-    id: 'g4r3qy4665qy45q',
-    xCoordinate: 2.64262367755,
-    yCoordinate: 2.45235323,
-  },
-  {
-    id: 'g4r3q6634463y45qy45q',
-    xCoordinate: 2.64262367755,
-    yCoordinate: 2.45235323,
-  },
-  {
-    id: '22',
-    xCoordinate: 2.64262367755,
-    yCoordinate: 2.45235323,
-  },
-
-]
-
-filterPointArray(pointB, pointArrayTest);
 
 module.exports = { buildRoute };
