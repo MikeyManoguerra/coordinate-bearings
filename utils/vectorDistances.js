@@ -1,5 +1,5 @@
 
-const Bearing = require('../models/bearing');
+const { Bearing } = require('../models/bearing');
 
 function buildRoute(route, currentPoint, pointArray, parentId = null) {
   // get important variables from route object

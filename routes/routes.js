@@ -2,10 +2,10 @@
 
 const express = require('express');
 const router = express.Router();
-const Point = require('../models/point');
-const DataSet = require('../models/dataSet');
-const Route = require('../models/route');
-const Bearing = require('../models/bearing');
+const { Point } = require('../models/point');
+const { DataSet } = require('../models/dataSet');
+const { Route } = require('../models/route');
+const { Bearing } = require('../models/bearing');
 
 const { buildRoute } = require('../utils/vectorDistances');
 
@@ -35,7 +35,7 @@ router.post('/', (req, res, next) => {
       return Point.find({ dataSetId: route.dataSetId });
     })
     .then(pointArray => {
-     
+
       let indexArray = [];
       for (let i = 0; i < 1000; i++) {
         let index = Math.floor(Math.random() * pointArray.length);

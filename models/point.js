@@ -17,5 +17,6 @@ pointSchema.set('toJSON', {
     delete ret.__v;
   }
 });
-module.exports = mongoose.model('Point', pointSchema);
+const Point = mongoose.model('Point', pointSchema);
+module.exports = { Point }
 

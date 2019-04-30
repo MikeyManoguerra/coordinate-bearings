@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 
 const bearingSchema = new mongoose.Schema({
-  parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Bearing'},
+  parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Bearing' },
   xCoordinate: { type: Number, required: true },
   yCoordinate: { type: Number, required: true },
   dataSetId: { type: mongoose.Schema.Types.ObjectId, ref: 'DataSet', required: true },
@@ -22,5 +22,6 @@ bearingSchema.set('toJSON', {
     delete ret.__v;
   }
 });
-module.exports = mongoose.model('Bearing', bearingSchema);
+const Bearing = mongoose.model('Bearing', bearingSchema);
+module.exports = { Bearing };
 

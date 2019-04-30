@@ -15,5 +15,6 @@ dataSetSchema.set('toJSON', {
     delete ret.__v;
   }
 });
-module.exports = mongoose.model('DataSet', dataSetSchema);
+let DataSet = mongoose.model('DataSet', dataSetSchema);
+module.exports = { DataSet }
 
