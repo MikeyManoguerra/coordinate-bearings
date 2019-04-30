@@ -6,7 +6,7 @@ inlets_raw = pandas.read_csv(
 inlets = inlets_raw.drop(
     ['symbolgroup', 'objectid', 'monthday_installed', 'year_installed', 'owner', 'rotation', 'subtype', 'system', 'inlettype', 'gps', 'operator', 'hydraulicid', 'facilityid'], axis=1)
 
-# inlets_head = inlets.head(n=20)
+inlets_head = inlets.head(n=20)
 inlets_dict = inlets.to_dict('split')
 x_y_nested_list = inlets_dict['data']
 
@@ -20,3 +20,7 @@ for point in x_y_nested_list:
 
 with open('../inlets.json', 'w') as write_file:
   json.dump(coordinate_list, write_file)
+
+
+# with open('../testInlets.json', 'w') as write_file:
+#   json.dump(coordinate_list, write_file)
