@@ -16,7 +16,7 @@ app.use(
 
 
 app.use('/api/datasets', dataSetsRouter);
-// app.use('/api/routes', routesRouter);
+app.use('/api/routes', routesRouter);
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');

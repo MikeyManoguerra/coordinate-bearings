@@ -7,7 +7,7 @@ function buildRoute(route, currentPoint, pointArray, parentId = null) {
   const bearingDirection = route.bearingDirection;
   // filter point array by parameters and remove current point from remaining points
   const updatedPointArray = filterPointArray(currentPoint, pointArray, bearingDirection);
-
+  console.log(updatedPointArray.length);
   // if there are no points left, exit recursion
   if (updatedPointArray.length === 0) {
     return;
@@ -73,27 +73,33 @@ function calculateMagnitude(currentPoint, otherPoint) {
 
 // called in filterPointArray, removes current point and any  points that do not match bearing direction in array
 function filterPointsByBearingDirection(currentPoint, arrayWithCurrentRemoved, bearingDirection) {
-  // does not handle crossing the max longitude line in pacific
+  // does not handle crossing the max longitude line in pacific, and the northern hemisphere
   switch (bearingDirection) {
     case 'NORTH': {
-      return arrayWithCurrentRemoved.filter(point => {
-        point.xCoordinate > currentPoint.xCoordinate;
-      })
+      const filteredArray = arrayWithCurrentRemoved.filter(point =>
+        point.yCoordinate > currentPoint.yCoordinate
+
+      )
+      return filteredArray;
     }
     case 'SOUTH': {
-      return arrayWithCurrentRemoved.filter(point => {
-        point.xCoordinate < currentPoint.xCoordinate;
-      })
+      const filteredArray = arrayWithCurrentRemoved.filter(point =>
+        point.yCoordinate < currentPoint.yCoordinate
+
+      )
+      return filteredArray;
     }
     case 'EAST': {
-      return arrayWithCurrentRemoved.filter(point => {
-        point.yCoordinate > currentPoint.yCoordinate;
-      })
+      const filteredArray = arrayWithCurrentRemoved.filter(point =>
+        point.xCoordinate > currentPoint.xCoordinate
+      )
+      return filteredArray;
     }
     case 'WEST': {
-      return arrayWithCurrentRemoved.filter(point => {
-        point.yCoordinate < currentPoint.yCoordinate;
-      })
+      const filteredArray = arrayWithCurrentRemoved.filter(point =>
+        point.xCoordinate < currentPoint.xCoordinate
+      )
+      return filteredArray;
     }
     default:
       return arrayWithCurrentRemoved;

@@ -38,4 +38,6 @@ router.post('/', (req, res, next) => {
     .catch(() => {
 
     });
-})
+});
+
+module.exports = router;
