@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const pointSchema = new mongoose.Schema({
   xCoordinate: { type: Number, required: true },
   yCoordinate: { type: Number, required: true },
-  dataSetId: { type: mongoose.Schema.Types.ObjectId, ref: 'dataSet', required: true },
+  dataSetId: { type: mongoose.Schema.Types.ObjectId, ref: 'DataSet', required: true },
 
 });
 // Add `createdAt` and `updatedAt` fields
