@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
+// leftBound: { type: Number },
+// rightBound: { type: Number },
 const routeSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  leftBound: { type: Number },
-  rightBound: { type: Number },
+  bearingDirection: { type: String },
   description: { type: String },
   dataSetId: { type: mongoose.Schema.Types.ObjectId, ref: 'DataSet', required: true },
 });
