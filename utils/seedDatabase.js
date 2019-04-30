@@ -1,8 +1,8 @@
 
 const mongoose = require('mongoose');
 
-// const { DATABASE_URL } = require('../config');
-const DATABASE_URL = 'mongodb://localhost/mongodb-coordinates';
+const { DATABASE_URL } = require('../config');
+// const DATABASE_URL = 'mongodb://localhost/mongodb-coordinates';
 const DataSet = require('../models/dataSet');
 const Point = require('../models/point');
 

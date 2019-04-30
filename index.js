@@ -2,10 +2,13 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
-const PORT = 3000;
+
 const dataSetsRouter = require('./routes/datasets');
 const routesRouter = require('./routes/routes');
 const { dbConnect } = require('./mongoose.js');
+
+const { PORT } = require('./config');
+
 
 app.use(express.static('public'));
 
