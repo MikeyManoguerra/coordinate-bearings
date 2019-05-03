@@ -8,12 +8,16 @@ function buildRoute(route, currentPoint, pointArray, parentId = null) {
   // filter point array by parameters and remove current point from remaining points
   const updatedPointArray = filterPointArray(currentPoint, pointArray, bearingDirection);
 
-  // if there are no points left, exit recursion
-  if (updatedPointArray.length === 0) {
+  // if current point is all thats left, exit recursion
+  if (updatedPointArray.length === 1) {
     return;
   }
   // get the next point with magnitude formula
-  const [nextPoint, shortestMagnitude] = findTheNextPoint(currentPoint, updatedPointArray);
+  const currentPointIndex = updatedPointArray.findIndex(point => point.id === currentPoint.id);
+  const [nextPoint, shortestMagnitude] = findTheNextPoint(currentPointIndex, updatedPointArray);
+  const arrayWithCurrentRemoved = [...updatedPointArray.slice(0, currentPointIndex), ...updatedPointArray.slice((currentPointIndex + 1))];
+
+
   // define new bearing for database
   const newBearing = {
     xCoordinate: nextPoint.xCoordinate,
@@ -31,35 +35,70 @@ function buildRoute(route, currentPoint, pointArray, parentId = null) {
       if (parentId) {
         return Bearing.findOneAndUpdate({ _id: parentId }, { $set: { childId: childId } }, { returnNewDocument: true })
           .then(() => {
-            return buildRoute(route, nextPoint, updatedPointArray, childId);
+            return buildRoute(route, nextPoint, arrayWithCurrentRemoved, childId);
           });
         // add another point to route
-      } else return buildRoute(route, nextPoint, updatedPointArray, childId);
+      } else return buildRoute(route, nextPoint, arrayWithCurrentRemoved, childId);
     })
     .catch(() => {
 
     });
 }
 
-function findTheNextPoint(currentPoint, pointArray) {
-  let shortestMagnitude = calculateMagnitude(currentPoint, pointArray[0]);
-  let nextPoint = pointArray[0];
-  pointArray.forEach(point => {
-    const magnitude = calculateMagnitude(currentPoint, point);
-    if (magnitude < shortestMagnitude) {
-      shortestMagnitude = magnitude;
-      nextPoint = point;
+function findTheNextPoint(currentPointIndex, pointArray, counter = 1) {
+
+  const currentPoint = pointArray[currentPointIndex];
+  let shortestMagnitude;
+  let nextPoint;
+  let pointToWest = pointArray[currentPointIndex - counter];
+  let pointToEast = pointArray[currentPointIndex + counter];
+
+  if (pointToEast && pointToWest) {
+    let magnitudeWest = calculateMagnitude(currentPoint, pointToWest);
+    let magnitudeEast = calculateMagnitude(currentPoint, pointToEast);
+    magnitudeWest < magnitudeEast ? shortestMagnitude = magnitudeWest : shortestMagnitude = magnitudeEast;
+    magnitudeWest < magnitudeEast ? nextPoint = pointToWest : nextPoint = pointToEast;
+  }
+  else if (pointToWest) {
+    shortestMagnitude = calculateMagnitude(currentPoint, pointToWest);
+    nextPoint = pointToWest;
+  }
+  else if (pointToEast) {
+    shortestMagnitude = calculateMagnitude(currentPoint, pointToEast);
+    nextPoint = pointToEast;
+  }
+  else {
+    return [nextPoint, shortestMagnitude];
+  }
+
+  counter = counter + 1;
+  pointToWest = pointArray[currentPointIndex - counter];
+  pointToEast = pointArray[currentPointIndex + counter];
+
+  let closestPointFound = false;
+
+  if (pointToWest) {
+    closestPointFound = Math.abs(currentPoint.xCoordinate - pointToWest.xCoordinate) > shortestMagnitude;
+    // console.log(Math.abs(currentPoint.xCoordinate - pointToWest.xCoordinate), shortestMagnitude, 'west', closestPointFound);
+    if (closestPointFound) {
+      return [nextPoint, shortestMagnitude];
     }
-  });
-  return [nextPoint, shortestMagnitude];
+  }
+  if (pointToEast) {
+    closestPointFound = Math.abs(currentPoint.xCoordinate - pointToEast.xCoordinate) > shortestMagnitude;
+    // console.log(Math.abs(currentPoint.xCoordinate - pointToEast.xCoordinate), shortestMagnitude, 'east', closestPointFound);
+    if (closestPointFound) {
+      return [nextPoint, shortestMagnitude];
+    }
+  }
+
+  return findTheNextPoint(currentPointIndex, pointArray, counter);
 }
 
 function filterPointArray(currentPoint, pointArray, bearingDirection) {
   // removes newest bearing from the points array, runs the filter function based upon the 
   // users bearing parameters
-  const index = pointArray.findIndex(point => point.id === currentPoint.id);
-  const arrayWithCurrentRemoved = [...pointArray.slice(0, index), ...pointArray.slice((index + 1))];
-  const arrayFilteredForBearing = filterPointsByBearingDirection(currentPoint, arrayWithCurrentRemoved, bearingDirection);
+  const arrayFilteredForBearing = filterPointsByBearingDirection(currentPoint, pointArray, bearingDirection);
   return arrayFilteredForBearing;
 }
 
@@ -79,28 +118,26 @@ function filterPointsByBearingDirection(currentPoint, arrayWithCurrentRemoved, b
   switch (bearingDirection) {
     case 'NORTH': {
       const filteredArray = arrayWithCurrentRemoved.filter(point =>
-        point.yCoordinate > currentPoint.yCoordinate
-
-      )
+        point.yCoordinate >= currentPoint.yCoordinate
+      );
       return filteredArray;
     }
     case 'SOUTH': {
       const filteredArray = arrayWithCurrentRemoved.filter(point =>
-        point.yCoordinate < currentPoint.yCoordinate
-
-      )
+        point.yCoordinate <= currentPoint.yCoordinate
+      );
       return filteredArray;
     }
     case 'EAST': {
       const filteredArray = arrayWithCurrentRemoved.filter(point =>
-        point.xCoordinate > currentPoint.xCoordinate
-      )
+        point.xCoordinate >= currentPoint.xCoordinate
+      );
       return filteredArray;
     }
     case 'WEST': {
       const filteredArray = arrayWithCurrentRemoved.filter(point =>
-        point.xCoordinate < currentPoint.xCoordinate
-      )
+        point.xCoordinate <= currentPoint.xCoordinate
+      );
       return filteredArray;
     }
     default:

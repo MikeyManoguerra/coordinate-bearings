@@ -18,7 +18,6 @@ router.post('/', (req, res, next) => {
     bearingDirection
   } = req.body;
   let route;
-
   return DataSet.findOne()
     .then((dataSet) => {
       const dataSetId = dataSet.id;
@@ -32,15 +31,15 @@ router.post('/', (req, res, next) => {
     })
     .then(_route => {
       route = _route;
-      return Point.find({ dataSetId: route.dataSetId });
+      return Point.find({ dataSetId: route.dataSetId }).sort({ xCoordinate: 1 });
     })
     .then(pointArray => {
-
       let indexArray = [];
-      for (let i = 0; i < 500; i++) {
+      for (let i = 0; i < 1000; i++) {
         let index = Math.floor(Math.random() * pointArray.length);
         indexArray.push(index);
       }
+      indexArray.sort((a, b) => a - b);
       let filteredPointArray = [];
       indexArray.forEach(index => {
         filteredPointArray.push(pointArray[index]);

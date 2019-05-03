@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { DataSet } = require('../models/dataSet');
+const { DataSet } = require('../models/dataSetModel');
 const { Point } = require('../models/point');
 // get the names of all the datasets
 
@@ -13,8 +13,6 @@ router.get('/', (req, res, next) => {
 });
 
 // TODO: addd a get all coordinates in dataset route?
-
-
 router.post('/', (req, res, next) => {
   const {
     name,
