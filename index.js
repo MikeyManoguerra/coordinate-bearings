@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 
-const dataSetsRouter = require('./routes/dataSets');
+// const dataSetsRouter = require('./routes/dataSets');
 const routesRouter = require('./routes/routes');
 const { dbConnect } = require('./mongoose.js');
 
@@ -20,7 +20,7 @@ app.use(
 );
 
 
-app.use('/api/dataSets', dataSetsRouter);
+// app.use('/api/dataSets', dataSetsRouter);
 app.use('/api/routes', routesRouter);
 
 app.use((req, res, next) => {
